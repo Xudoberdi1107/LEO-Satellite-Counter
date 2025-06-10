@@ -1,0 +1,59 @@
+.leo-container {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 20px;
+  border-radius: 12px;
+  background: #f4f8fc;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+  font-family: "Segoe UI", sans-serif;
+}
+
+.leo-container h2 {
+  text-align: center;
+  color: #123b68;
+}
+
+.leo-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.leo-inputs label {
+  display: flex;
+  flex-direction: column;
+  color: #333;
+}
+
+.leo-inputs input {
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  margin-top: 5px;
+}
+
+button {
+  padding: 10px;
+  border: none;
+  background-color: #276ef1;
+  color: white;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #1554c0;
+}
+
+.leo-result {
+  margin-top: 30px;
+  background-color: #e6f0ff;
+  padding: 15px;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 18px;
+  color: #0b2c55;
+}
