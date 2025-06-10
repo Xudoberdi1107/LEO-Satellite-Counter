@@ -1,10 +1,13 @@
 import './App.css'
-import LEOSatelliteCalculator from './LEOSatelliteCalculator'
+import LEOSatelliteCoverage from './LEOSatelliteCoverage'
 
 function App() {
 
   return (
-    <LEOSatelliteCalculator />
+    <div className='app'>
+      {/* <LEOSatelliteCalculator /> */}
+      <LEOSatelliteCoverage />
+    </div>
   )
 }
 

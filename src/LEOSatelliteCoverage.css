@@ -1,0 +1,97 @@
+.leo-coverage-container {
+    text-align: center;
+    font-family: Arial, sans-serif;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    color: #eee;
+    background: #111;
+    border-radius: 10px;
+    box-shadow: 0 0 20px #0ff3;
+}
+
+.leo-coverage-inputs {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+}
+
+.leo-coverage-inputs label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.leo-coverage-inputs input {
+    width: 100px;
+    padding: 4px;
+    background: #222;
+    border: 1px solid #555;
+    color: #fff;
+    border-radius: 4px;
+}
+
+button {
+    margin-top: 10px;
+    padding: 8px 16px;
+    font-weight: bold;
+    cursor: pointer;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+}
+
+.leo-coverage-result {
+    margin-top: 20px;
+    font-size: 18px;
+    color: #0ff;
+}
+
+.leo-visualization {
+    margin-top: 30px;
+}
+
+.orbit-view {
+    width: 350px;
+    height: 350px;
+    border-radius: 50%;
+    background: radial-gradient(circle at center, #021d43 0%, #000 100%);
+    box-shadow: 0 0 10px #00f inset;
+    border: 2px solid #0ff3;
+}
+
+.earth {
+    fill: #0077be;
+    stroke: white;
+    stroke-width: 2;
+    filter: drop-shadow(0 0 5px #00ffff);
+}
+
+.orbit-path {
+    stroke: rgba(255, 255, 255, 0.2);
+    stroke-width: 1;
+}
+
+.satellite {
+    fill: #ffeb3b;
+    stroke: #ff9800;
+    stroke-width: 1;
+    filter: drop-shadow(0 0 3px #ffa000);
+}
+
+.satellite-orbit {
+    animation: rotateSatellite 10s linear infinite;
+    transform-origin: 0px 0px;
+}
+
+@keyframes rotateSatellite {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
