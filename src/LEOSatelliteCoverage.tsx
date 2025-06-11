@@ -1,144 +1,179 @@
-import React, { useEffect, useState } from 'react';
+// // components/OrbitSimulator.tsx
+// 'use client';
 
-interface Orbit {
-    name: string;
-    inclination: number; // in degrees
-    altitude: number;    // in km, orbital balandlik
+// import { OrbitControls } from '@react-three/drei';
+// import { Canvas } from '@react-three/fiber';
+// import * as THREE from 'three';
+
+// type OrbitProps = {
+//     inclination: number;
+//     radius: number;
+//     color: string;
+// };
+
+// const Orbit = ({ inclination, radius, color }: OrbitProps) => {
+//     const points: THREE.Vector3[] = [];
+//     const segments = 360;
+
+//     for (let i = 0; i <= segments; i++) {
+//         const theta = (i / segments) * 2 * Math.PI;
+//         const x = radius * Math.cos(theta);
+//         const y = radius * Math.sin(theta) * Math.cos(THREE.MathUtils.degToRad(inclination));
+//         const z = radius * Math.sin(theta) * Math.sin(THREE.MathUtils.degToRad(inclination));
+//         points.push(new THREE.Vector3(x, y, z));
+//     }
+
+//     const curve = new THREE.CatmullRomCurve3(points, true);
+//     const geometry = new THREE.TubeGeometry(curve, 100, 0.1, 8, true);
+
+//     return (
+//         <mesh geometry={geometry}>
+//             <meshBasicMaterial attach="material" color={color} />
+//         </mesh>
+//     );
+// };
+
+// export default function OrbitSimulator() {
+//     return (
+//         <Canvas camera={{ position: [0, 0, 500], fov: 25 }} style={{ width: "100vw", height: "100vh", border: "5px solid width" }}>
+//             {/* Yer shari */}
+//             <mesh>
+//                 <sphereGeometry args={[100, 64, 64]} /> // [30 → 100]
+//                 <meshStandardMaterial color="#1E90FF" wireframe />
+//             </mesh>
+
+//             {/* Trayektoriyalar */}
+//             <Orbit inclination={0} radius={120} color="green" />     // Ekvatorial
+//             <Orbit inclination={30} radius={140} color="yellow" />   // Yonaltirilgan
+//             <Orbit inclination={90} radius={160} color="red" />      // Qutbiy
+//             <Orbit inclination={98} radius={180} color="orange" />   // Sun-synchronous
+//             <Orbit inclination={63.4} radius={130} color="purple" /> // Molniya-o‘xshash
+//             {/* Yorug'lik */}
+//             <ambientLight intensity={0.8} />
+//             <pointLight position={[100, 100, 100]} intensity={1} />
+
+//             {/* Harakat uchun */}
+//             <OrbitControls />
+//         </Canvas>
+//     );
+// }
+
+
+'use client';
+
+import { OrbitControls } from '@react-three/drei';
+import { Canvas, useFrame } from '@react-three/fiber';
+import React, { useRef } from 'react';
+import * as THREE from 'three';
+import type { orbitsType } from './App';
+
+type OrbitProps = {
+    inclination: number;
+    radius: number;
     color: string;
-    satelliteCount: number; // suniy yo‘ldoshlar soni
-}
+};
 
-const EARTH_RADIUS_KM = 6371;
+const Orbit = ({ inclination, radius, color }: OrbitProps) => {
+    const points: THREE.Vector3[] = [];
+    const segments = 360;
 
-const orbits: Orbit[] = [
-    { name: "Ekvatorial (0°-10°)", inclination: 5, altitude: 400, color: "#FF5733", satelliteCount: 2 },
-    { name: "Yonaltirilgan (20°-70°)", inclination: 45, altitude: 800, color: "#33C1FF", satelliteCount: 3 },
-    { name: "Qutbiy (≈90°)", inclination: 90, altitude: 600, color: "#33FF57", satelliteCount: 4 },
-    { name: "Sun-synchronous (≈97°-98°)", inclination: 97, altitude: 700, color: "#FFC300", satelliteCount: 7 },
-    { name: "Molniya-o‘xshash (63.4°)", inclination: 63.4, altitude: 600, color: "#8E44AD", satelliteCount: 8 },
-];
+    for (let i = 0; i <= segments; i++) {
+        const theta = (i / segments) * 2 * Math.PI;
+        const x = radius * Math.cos(theta);
+        const y = radius * Math.sin(theta) * Math.cos(THREE.MathUtils.degToRad(inclination));
+        const z = radius * Math.sin(theta) * Math.sin(THREE.MathUtils.degToRad(inclination));
+        points.push(new THREE.Vector3(x, y, z));
+    }
 
-const width = 1000;
-const height = 1000;
-const centerX = width / 2;
-const centerY = height / 2;
-const scale = 0.05;
-
-const degToRad = (deg: number) => (deg * Math.PI) / 180;
-
-const OrbitSimulator: React.FC = () => {
-    const [angle, setAngle] = useState(0); // Barcha suniy yo‘ldoshlar uchun umumiy burchak
-
-    // Animatsiya (har 50 ms da angle o‘zgaradi)
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setAngle((prev) => (prev + 1) % 360);
-        }, 50);
-        return () => clearInterval(interval);
-    }, []);
+    const curve = new THREE.CatmullRomCurve3(points, true);
+    const geometry = new THREE.TubeGeometry(curve, 100, 0.3, 8, true);
 
     return (
-        <svg width={width} height={height} style={{ backgroundColor: '#001f3f' }}>
-            {/* Yer yuzasi */}
-            <circle
-                cx={centerX}
-                cy={centerY}
-                r={EARTH_RADIUS_KM * scale}
-                fill="#2E86C1"
-                stroke="#1B4F72"
-                strokeWidth={3}
-            />
-            {/* <text
-                x={centerX}
-                y={centerY + EARTH_RADIUS_KM * scale + 20}
-                fill="white"
-                fontSize={14}
-                textAnchor="middle"
-            >
-                Yer (Earth)
-            </text> */}
-
-            {/* Orbitalarni chizish va suniy yo‘ldoshlar */}
-            {orbits.map(({ inclination, altitude, color, satelliteCount }, idx) => {
-                const orbitRadius = (EARTH_RADIUS_KM + altitude) * scale;
-                const radIncl = degToRad(inclination);
-
-                const rx = orbitRadius;
-                const ry = orbitRadius * Math.cos(radIncl);
-
-                // Orbitani aylantirish burchagi
-                const rotation = 45;
-
-                return (
-                    <g key={idx}>
-                        {/* Orbit ellipse */}
-                        <ellipse
-                            cx={centerX}
-                            cy={centerY}
-                            rx={rx}
-                            ry={ry}
-                            stroke={color}
-                            strokeWidth={2}
-                            fill="none"
-                            transform={`rotate(${rotation}, ${centerX}, ${centerY})`}
-                            opacity={0.8}
-                        />
-                        {/* Orbit nomi */}
-                        {/* <text
-                            x={centerX + rx + 10}
-                            y={centerY - ry + idx * 20}
-                            fill={color}
-                            fontSize={12}
-                            fontWeight="bold"
-                        >
-                            {name}
-                        </text> */}
-
-                        {/* Suniy yo‘ldoshlar */}
-                        {[...Array(satelliteCount)].map((_, satIdx) => {
-                            // Har bir suniy yo‘ldosh uchun burchak
-                            const satAngle = ((360 / satelliteCount) * satIdx + angle) % 360;
-                            const radSatAngle = degToRad(satAngle);
-
-                            // Suniy yo‘ldosh koordinatalari ellipsa bo‘yicha
-                            // Ellipsaning parametrik tenglamasi:
-                            // x = cx + rx * cos(t)
-                            // y = cy + ry * sin(t)
-                            // Biz orbitani 45° aylantiramiz, shuning uchun x, y ni transformatsiya qilamiz:
-
-                            // Aylantirish formulasini qo'llaymiz (x,y) atrofida (cx,cy) markazda:
-                            // x' = cx + (x - cx) * cosθ - (y - cy) * sinθ
-                            // y' = cy + (x - cx) * sinθ + (y - cy) * cosθ
-                            const x0 = centerX + rx * Math.cos(radSatAngle);
-                            const y0 = centerY + ry * Math.sin(radSatAngle);
-
-                            const radRot = degToRad(rotation);
-                            const x =
-                                centerX +
-                                (x0 - centerX) * Math.cos(radRot) -
-                                (y0 - centerY) * Math.sin(radRot);
-                            const y =
-                                centerY +
-                                (x0 - centerX) * Math.sin(radRot) +
-                                (y0 - centerY) * Math.cos(radRot);
-
-                            return (
-                                <circle
-                                    key={satIdx}
-                                    cx={x}
-                                    cy={y}
-                                    r={5}
-                                    fill={color}
-                                    stroke="#fff"
-                                    strokeWidth={1}
-                                />
-                            );
-                        })}
-                    </g>
-                );
-            })}
-        </svg>
+        <mesh geometry={geometry}>
+            <meshBasicMaterial attach="material" color={color} />
+        </mesh>
     );
 };
 
-export default OrbitSimulator;
+type SatelliteProps = {
+    inclination: number;
+    radius: number;
+    speed: number;
+    color: string;
+    initialAngle: number;
+};
+
+const Satellite = ({ inclination, radius, speed, color, initialAngle }: SatelliteProps) => {
+    const meshRef = useRef<THREE.Mesh>(null!);
+    const angleRef = useRef(initialAngle);
+
+    useFrame(() => {
+        angleRef.current += speed;
+
+        const theta = angleRef.current;
+        const x = radius * Math.cos(theta);
+        const y = radius * Math.sin(theta) * Math.cos(THREE.MathUtils.degToRad(inclination));
+        const z = radius * Math.sin(theta) * Math.sin(THREE.MathUtils.degToRad(inclination));
+
+        meshRef.current.position.set(x, y, z);
+    });
+
+    return (
+        <mesh ref={meshRef}>
+            <sphereGeometry args={[2, 16, 16]} />
+            <meshStandardMaterial color={color} />
+        </mesh>
+    );
+};
+
+type OrbitSimulatorProps = {
+    orbitsAndSatellites: orbitsType[]
+}
+export default function OrbitSimulator(props: OrbitSimulatorProps) {
+    const { orbitsAndSatellites } = props
+
+
+    const satellites: SatelliteProps[] = [];
+
+    orbitsAndSatellites.forEach(({ inclination, radius, count }, orbitIndex) => {
+        for (let i = 0; i < count; i++) {
+            const angle = (i / count) * 2 * Math.PI; // 0 dan 2π gacha bo‘linadi
+            const speed = 0.0035 + orbitIndex * 0.0002; // Har bir orbitaga mos tezlik
+            satellites.push({
+                inclination,
+                radius,
+                speed,
+                color: 'white',
+                initialAngle: angle,
+            });
+        }
+    });
+
+    return (
+        <Canvas camera={{ position: [0, 0, 500], fov: 25 }} style={{ width: '100vw', height: '100vh' }}>
+            {/* Yer shari */}
+            <mesh>
+                <sphereGeometry args={[100, 64, 64]} />
+                <meshStandardMaterial color="#1E90FF" wireframe />
+            </mesh>
+
+            {/* Orbit trayektoriyalari */}
+            {orbitsAndSatellites.map(({ inclination, radius, color }, index) => (
+                <Orbit key={index} inclination={inclination} radius={radius} color={color} />
+            ))}
+
+            {/* 24 ta sun’iy yo‘ldosh */}
+            {satellites.map((sat, index) => (
+                <Satellite key={index} {...sat} />
+            ))}
+
+            {/* Yorug‘lik manbalari */}
+            <ambientLight intensity={0.8} />
+            <pointLight position={[100, 100, 100]} intensity={1} />
+
+            {/* Kamera harakati */}
+            <OrbitControls />
+        </Canvas>
+    );
+}
+
