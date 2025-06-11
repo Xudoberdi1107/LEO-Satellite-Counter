@@ -1,5 +1,5 @@
 import type { Dispatch, SetStateAction } from "react";
-import React, { useState } from "react";
+import { useState } from "react";
 import type { orbitsType } from "./App";
 import "./SelectOrbits.css";
 
