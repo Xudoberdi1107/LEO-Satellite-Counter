@@ -59,7 +59,7 @@ const OrbitSimulator: React.FC = () => {
             </text> */}
 
             {/* Orbitalarni chizish va suniy yo‘ldoshlar */}
-            {orbits.map(({ name, inclination, altitude, color, satelliteCount }, idx) => {
+            {orbits.map(({ inclination, altitude, color, satelliteCount }, idx) => {
                 const orbitRadius = (EARTH_RADIUS_KM + altitude) * scale;
                 const radIncl = degToRad(inclination);
 
